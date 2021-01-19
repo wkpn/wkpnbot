@@ -4,7 +4,7 @@ from aiogram.types import (
     Message
 )
 
-from config import channel_id, token, whitelist
+from .config import channel_id, token, whitelist
 
 
 def bot_dispatcher() -> Dispatcher:
