@@ -1,7 +1,8 @@
 from ipaddress import IPv4Address, IPv4Network
 from starlette.exceptions import HTTPException
 from starlette.status import HTTP_403_FORBIDDEN, HTTP_500_INTERNAL_SERVER_ERROR
-from typing import Optional
+from starlette.requests import Request
+from typing import Callable, Optional
 
 
 TG_NETWORKS = [IPv4Network("149.154.160.0/20"), IPv4Network("91.108.4.0/22")]
@@ -21,3 +22,10 @@ def check_ip(request_host: Optional[str]) -> None:
             status_code=HTTP_403_FORBIDDEN,
             detail="Bad IP address"
         )
+
+
+def secure_endpoint(endpoint: Callable):
+    async def wrapped(request: Request):
+        check_ip(request.headers.get("x-real-ip"))
+        return await endpoint(request)
+    return wrapped
