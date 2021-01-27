@@ -6,4 +6,5 @@ config = Config()
 
 channel_id: int = config("CHANNEL_ID", cast=int)
 token: str = config("TOKEN")
+secret: str = config("SECRET")
 whitelist: List[int] = list(map(int, config("WHITELIST").split(",")))
