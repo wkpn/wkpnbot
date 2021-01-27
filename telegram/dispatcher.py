@@ -1,14 +1,12 @@
 from aiogram import Bot, Dispatcher
-from aiogram.types import (
-    ContentTypes,
-    Message
-)
+from aiogram.types import ContentTypes, Message
+from aiogram.utils.markdown import escape_md, text
 
-from .config import channel_id, token, whitelist
+from config import channel_id, token, whitelist
 
 
 def bot_dispatcher() -> Dispatcher:
-    bot = Bot(token=token)
+    bot = Bot(token=token, parse_mode="MarkdownV2")
     dp = Dispatcher(bot)
 
     Bot.set_current(dp.bot)
@@ -19,11 +17,14 @@ def bot_dispatcher() -> Dispatcher:
         commands=["start"]
     )
     async def start_handler(message: Message):
-        await message.reply("I will reply as soon as I can")
+        await message.answer(
+            text(escape_md("Send me your message now."), f"I will reply *as soon as I can*")
+        )
 
-        mention = message.from_user.get_mention(as_html=True)
+        mention = message.from_user.get_mention(as_html=False)
         await dp.bot.send_message(
-            channel_id, f"Launched by {mention} (id={message.from_user.id})", parse_mode="HTML"
+            channel_id,
+            text(f"Launched by {mention}", escape_md(f"(id={message.from_user.id})"))
         )
 
     @dp.message_handler(
