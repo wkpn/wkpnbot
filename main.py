@@ -1,17 +1,15 @@
 from aiogram.types import Update
-
-from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Route
 from starlette.status import HTTP_200_OK
 
-from security import secure_endpoint
+#from security import secure_endpoint
 from telegram import dispatcher as dp, secret
 
 
-def build_application() -> Starlette:
-    @secure_endpoint
+def build_application() -> Route:
+    #@secure_endpoint
     async def webhook_handler(request: Request) -> Response:
         raw_update = await request.json()
         telegram_update = Update(**raw_update)
@@ -21,11 +19,7 @@ def build_application() -> Starlette:
         finally:
             return Response(status_code=HTTP_200_OK)
 
-    routes = [
-        Route(f"/webhook-{secret}", webhook_handler, methods=["POST"])
-    ]
-
-    app = Starlette(routes=routes)
+    app = Route(f"/webhook-{secret}", webhook_handler, methods=["POST"])
 
     return app
 

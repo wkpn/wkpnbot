@@ -1,2 +1,2 @@
-aiogram==2.12
-starlette[full]
+aiogram==2.14
+starlette==0.15.0
