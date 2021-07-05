@@ -1,9 +1,9 @@
 from aiogram import Dispatcher
 from aiogram.types import ContentTypes, Message, InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.markdown import escape_md, link, text
+from aiogram.utils.markdown import escape_md, text
 
-from .app_icons.icons import Icons
 from .config import channel_id, whitelist
+from .logos.icons import Icons
 
 
 FORWARD_TYPES = ContentTypes.TEXT | ContentTypes.PHOTO | ContentTypes.DOCUMENT
@@ -37,12 +37,12 @@ def register_commands(dp: Dispatcher):
     )
     async def about_handler(message: Message):
         await message.answer(
-            f"Age: 24\n"
-            f"{escape_md('Can speak: 🇷🇺(native), 🇬🇧(C2), 🇩🇪(~B1)')}\n"
-            f"Main skill: Python\n"
-            f"{escape_md('Prod. experience: 4+ y.')}\n"
-            f"Working at: EPAM Systems\n"
-            f"Title: Software Engineer\n"
+            f"*Age*: 24\n"
+            f"*Can speak*: {escape_md('🇷🇺(native), 🇬🇧(C2), 🇩🇪(~B1)')}\n"
+            f"*Main skill*: Python\n"
+            f"*Production experience*: {escape_md('4+ y.')}\n"
+            f"*Working at*: EPAM Systems\n"
+            f"*Title*: Software Engineer\n"
         )
 
     @dp.message_handler(
@@ -91,11 +91,11 @@ def register_commands(dp: Dispatcher):
     )
     async def current_project_handler(message: Message):
         await message.answer(
-            f"Name: Distribution at Thomson Reuters\n"
-            f"{escape_md('Description: Platform modernization & migration to AWS')}\n"
-            f"Role: Backend Developer\n\n"
-            f"{escape_md('Stack: python3.8, pytest, docker, AWS')}\n"
-            f"Cloud stack: API Gateway, CloudFormation, "
+            f"*Name*: Distribution at Thomson Reuters\n"
+            f"*Description*: {escape_md('Platform modernization & migration to AWS')}\n"
+            f"*Role*: Backend Developer\n\n"
+            f"*Stack*: {escape_md('python3.8, pytest, docker, AWS')}\n"
+            f"*Cloud stack*: API Gateway, CloudFormation, "
             f"CloudWatch, CodeBuild, CodePipeline, DynamoDB, Lambda, SNS, SQS"
         )
 
