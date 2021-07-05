@@ -77,7 +77,7 @@ def register_commands(dp: Dispatcher):
     async def linkedin_handler(message: Message):
         reply_markup = InlineKeyboardMarkup()
         reply_markup.add(InlineKeyboardButton(
-            text="LinkedIn", url="https://www.linkedin.com/in/whyapostrophe/")
+            text="LinkedIn", url="https://www.linkedin.com/in/wkpn/")
         )
 
         await message.answer_photo(
