@@ -1,5 +1,10 @@
 from aiogram import Dispatcher
-from aiogram.types import ContentTypes, Message, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import (
+    ContentTypes,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message
+)
 from aiogram.utils.markdown import escape_md, text
 
 from .config import channel_id, whitelist
@@ -37,12 +42,15 @@ def register_commands(dp: Dispatcher):
     )
     async def about_handler(message: Message):
         await message.answer(
-            f"*Age*: 24\n"
-            f"*Can speak*: {escape_md('🇷🇺(native), 🇬🇧(C2), 🇩🇪(~B1)')}\n"
-            f"*Main skill*: Python\n"
-            f"*Production experience*: {escape_md('4+ y.')}\n"
-            f"*Working at*: EPAM Systems\n"
-            f"*Title*: Software Engineer\n"
+            text(
+                "*Age*: 24",
+                f"*Can speak*: {escape_md('🇷🇺(native), 🇬🇧(C2), 🇩🇪(~B1)')}",
+                "*Main skill*: Python",
+                f"*Production experience*: {escape_md('4+ y.')}",
+                "*Working at*: EPAM Systems",
+                "*Title*: Software Engineer",
+                sep="\n"
+            )
         )
 
     @dp.message_handler(
@@ -61,8 +69,10 @@ def register_commands(dp: Dispatcher):
     )
     async def github_handler(message: Message):
         reply_markup = InlineKeyboardMarkup()
-        reply_markup.add(InlineKeyboardButton(
-            text="GitHub", url="https://github.com/wkpn")
+        reply_markup.add(
+            InlineKeyboardButton(
+                text="GitHub", url="https://github.com/wkpn"
+            )
         )
 
         await message.answer_photo(
@@ -76,8 +86,10 @@ def register_commands(dp: Dispatcher):
     )
     async def linkedin_handler(message: Message):
         reply_markup = InlineKeyboardMarkup()
-        reply_markup.add(InlineKeyboardButton(
-            text="LinkedIn", url="https://www.linkedin.com/in/wkpn/")
+        reply_markup.add(
+            InlineKeyboardButton(
+                text="LinkedIn", url="https://www.linkedin.com/in/wkpn/"
+            )
         )
 
         await message.answer_photo(
@@ -91,12 +103,15 @@ def register_commands(dp: Dispatcher):
     )
     async def current_project_handler(message: Message):
         await message.answer(
-            f"*Name*: Distribution at Thomson Reuters\n"
-            f"*Description*: {escape_md('Platform modernization & migration to AWS')}\n"
-            f"*Role*: Backend Developer\n\n"
-            f"*Stack*: {escape_md('python3.8, pytest, docker, AWS')}\n"
-            f"*Cloud stack*: API Gateway, CloudFormation, "
-            f"CloudWatch, CodeBuild, CodePipeline, DynamoDB, Lambda, SNS, SQS"
+            text(
+                "*Name*: Distribution at Thomson Reuters",
+                f"*Description*: {escape_md('Platform modernization & migration to AWS')}",
+                "*Role*: Backend Developer",
+                f"*Stack*: {escape_md('python3.8, pytest, docker, AWS')}",
+                "*Cloud stack*: API Gateway, CloudFormation, "
+                "CloudWatch, CodeBuild, CodePipeline, DynamoDB, Lambda, SNS, SQS",
+                sep="\n"
+            )
         )
 
     @dp.message_handler(

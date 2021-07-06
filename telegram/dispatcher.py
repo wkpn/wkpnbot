@@ -1,8 +1,8 @@
 from aiogram import Bot, Dispatcher
 from aiogram.types import ParseMode
 
-from .config import token
 from .commands import register_commands
+from .config import token
 
 
 def bot_dispatcher() -> Dispatcher:
