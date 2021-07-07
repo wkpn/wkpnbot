@@ -13,7 +13,7 @@ from .user import register_user_commands
 from ..build_reply_markup import build_reply_markup
 from ..db import DB
 from ..config import channel_id, whitelist
-from ..logos.icons import Icons
+from ..logos import Icons
 
 
 FORWARD_TYPES = ContentTypes.TEXT | ContentTypes.PHOTO | ContentTypes.DOCUMENT
