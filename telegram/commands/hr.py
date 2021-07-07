@@ -26,7 +26,7 @@ async def register_hr_commands(dp: Dispatcher, message: Message):
     )
     await message.answer(
         "HR commands are enabled\n\n"
-        f"{escape_md('They make take some time to disappear: close the chat')} "
+        f"{escape_md('They make take some time to appear: close the chat')} "
         f"{escape_md('and then re-open it or restart Telegram if you are')} "
         f"{escape_md('using mobile app - this is a current client behavior')}",
         reply_markup=build_reply_markup(True)
