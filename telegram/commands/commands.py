@@ -3,28 +3,41 @@ from aiogram.types import (
     ContentTypes,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
-    Message
+    Message,
 )
 from aiogram.utils.markdown import escape_md, text
 
-from .config import channel_id, whitelist
-from .logos.icons import Icons
+from .hr import register_hr_commands
+from .user import register_user_commands
+
+from ..build_reply_markup import build_reply_markup
+from ..db import DB
+from ..config import channel_id, whitelist
+from ..logos.icons import Icons
 
 
 FORWARD_TYPES = ContentTypes.TEXT | ContentTypes.PHOTO | ContentTypes.DOCUMENT
 
 
 def register_commands(dp: Dispatcher):
+    db = DB()
+
     @dp.message_handler(
         lambda msg: msg.from_user.id not in whitelist,
         commands=["start"]
     )
     async def start_handler(message: Message):
+        db.update_user_mode(False, user_id=message.from_user.id)
+        await register_user_commands(dp, message)
+
+        reply_keyboard_markup = build_reply_markup(False)
+
         await message.answer(
             text(
-                escape_md("Send me your message now."),
-                f"I will reply *as soon as I can*"
-            )
+                escape_md(f"Send me your message now. "),
+                f"I will reply *as soon as I can* "
+            ),
+            reply_markup=reply_keyboard_markup
         )
 
         mention = message.from_user.get_mention(as_html=False)
@@ -38,6 +51,29 @@ def register_commands(dp: Dispatcher):
 
     @dp.message_handler(
         lambda msg: msg.from_user.id not in whitelist,
+        lambda msg: not db.get_user_mode(msg.from_user.id),
+        lambda msg: msg.text == "I'm HR",
+    )
+    async def switch_to_hr_mode(message: Message):
+        db.update_user_mode(True, user_id=message.from_user.id)
+
+        await register_hr_commands(dp, message)
+        return
+
+    @dp.message_handler(
+        lambda msg: msg.from_user.id not in whitelist,
+        lambda msg: db.get_user_mode(msg.from_user.id),
+        lambda msg: msg.text == "I'm not HR",
+    )
+    async def switch_to_user_mode(message: Message):
+        db.update_user_mode(False, user_id=message.from_user.id)
+
+        await register_user_commands(dp, message, False)
+        return
+
+    @dp.message_handler(
+        lambda msg: msg.from_user.id not in whitelist,
+        lambda msg: db.get_user_mode(msg.from_user.id),
         commands=["about"]
     )
     async def about_handler(message: Message):
@@ -55,6 +91,7 @@ def register_commands(dp: Dispatcher):
 
     @dp.message_handler(
         lambda msg: msg.from_user.id not in whitelist,
+        lambda msg: db.get_user_mode(msg.from_user.id),
         commands=["email"]
     )
     async def email_handler(message: Message):
@@ -65,6 +102,7 @@ def register_commands(dp: Dispatcher):
 
     @dp.message_handler(
         lambda msg: msg.from_user.id not in whitelist,
+        lambda msg: db.get_user_mode(msg.from_user.id),
         commands=["github"]
     )
     async def github_handler(message: Message):
@@ -82,6 +120,7 @@ def register_commands(dp: Dispatcher):
 
     @dp.message_handler(
         lambda msg: msg.from_user.id not in whitelist,
+        lambda msg: db.get_user_mode(msg.from_user.id),
         commands=["linkedin"]
     )
     async def linkedin_handler(message: Message):
@@ -99,6 +138,7 @@ def register_commands(dp: Dispatcher):
 
     @dp.message_handler(
         lambda msg: msg.from_user.id not in whitelist,
+        lambda msg: db.get_user_mode(msg.from_user.id),
         commands=["current_project"]
     )
     async def current_project_handler(message: Message):

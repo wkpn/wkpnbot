@@ -1,2 +1,3 @@
 aiogram==2.14.2
+deta==0.9
 starlette==0.15.0
