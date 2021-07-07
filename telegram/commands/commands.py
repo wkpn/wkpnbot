@@ -11,8 +11,8 @@ from .hr import register_hr_commands
 from .user import register_user_commands
 
 from ..build_reply_markup import build_reply_markup
-from ..db import DB
 from ..config import channel_id, whitelist
+from ..db import DB
 from ..logos import Icons
 
 
