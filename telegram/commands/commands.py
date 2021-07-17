@@ -12,7 +12,7 @@ from .custom_filters import (
     CommandAbout,
     CommandCurrentProject,
     CommandEmail,
-    CommandGithub,
+    CommandGitHub,
     CommandLinkedIn,
     CommandSignal,
     UserModeFilter
@@ -24,7 +24,6 @@ from ..build_reply_markup import build_reply_markup
 from ..config import bot_admin, channel_id, whitelist
 from ..db import db
 from ..logos import Icons
-
 
 FORWARD_TYPES = ContentTypes.TEXT | ContentTypes.PHOTO | ContentTypes.DOCUMENT
 
@@ -67,7 +66,7 @@ def register_commands(dp: Dispatcher):
         else:
             message_id = message.reply_to_message.message_id - 1
             original_from_user_id = db.get_message_data(message_id)
-            await message.send_copy(original_from_user_id)#, reply_to_message_id=message_id)
+            await message.copy_to(original_from_user_id)  #, reply_to_message_id=message_id)
         return
 
     @dp.message_handler(
@@ -124,7 +123,7 @@ def register_commands(dp: Dispatcher):
     @dp.message_handler(
         ~IDFilter(whitelist),
         UserModeFilter(),
-        CommandGithub()
+        CommandGitHub()
     )
     async def github_handler(message: Message):
         reply_markup = InlineKeyboardMarkup()

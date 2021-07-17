@@ -14,7 +14,7 @@ class CommandEmail(Command):
         super().__init__(['email'])
 
 
-class CommandGithub(Command):
+class CommandGitHub(Command):
     def __init__(self):
         super().__init__(['github'])
 
