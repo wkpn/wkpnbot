@@ -1,4 +1,5 @@
 from aiogram import Dispatcher
+from aiogram.dispatcher.filters import CommandStart, IDFilter, Text
 from aiogram.types import (
     ContentTypes,
     InlineKeyboardButton,
@@ -7,12 +8,21 @@ from aiogram.types import (
 )
 from aiogram.utils.markdown import escape_md, text
 
+from .custom_filters import (
+    CommandAbout,
+    CommandCurrentProject,
+    CommandEmail,
+    CommandGithub,
+    CommandLinkedIn,
+    CommandSignal,
+    UserModeFilter
+)
 from .hr import register_hr_commands
 from .user import register_user_commands
 
 from ..build_reply_markup import build_reply_markup
-from ..config import channel_id, whitelist
-from ..db import DB
+from ..config import bot_admin, channel_id, whitelist
+from ..db import db
 from ..logos import Icons
 
 
@@ -20,11 +30,9 @@ FORWARD_TYPES = ContentTypes.TEXT | ContentTypes.PHOTO | ContentTypes.DOCUMENT
 
 
 def register_commands(dp: Dispatcher):
-    db = DB()
-
     @dp.message_handler(
-        lambda msg: msg.from_user.id not in whitelist,
-        commands=["start"]
+        ~IDFilter(whitelist),
+        CommandStart()
     )
     async def start_handler(message: Message):
         db.update_user_mode(False, user_id=message.from_user.id)
@@ -50,9 +58,22 @@ def register_commands(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        lambda msg: msg.from_user.id not in whitelist,
-        lambda msg: not db.get_user_mode(msg.from_user.id),
-        lambda msg: msg.text == "I'm HR",
+        IDFilter(bot_admin),
+        content_types=ContentTypes.ANY
+    )
+    async def reply(message: Message):
+        if message.reply_to_message.forward_from:
+            await message.send_copy(message.reply_to_message.forward_from.id)
+        else:
+            message_id = message.reply_to_message.message_id - 1
+            original_from_user_id = db.get_message_data(message_id)
+            await message.send_copy(original_from_user_id)#, reply_to_message_id=message_id)
+        return
+
+    @dp.message_handler(
+        ~IDFilter(whitelist),
+        ~UserModeFilter(),
+        Text("I'm HR"),
     )
     async def switch_to_hr_mode(message: Message):
         db.update_user_mode(True, user_id=message.from_user.id)
@@ -61,9 +82,9 @@ def register_commands(dp: Dispatcher):
         return
 
     @dp.message_handler(
-        lambda msg: msg.from_user.id not in whitelist,
-        lambda msg: db.get_user_mode(msg.from_user.id),
-        lambda msg: msg.text == "I'm not HR",
+        ~IDFilter(whitelist),
+        UserModeFilter(),
+        Text("I'm not HR"),
     )
     async def switch_to_user_mode(message: Message):
         db.update_user_mode(False, user_id=message.from_user.id)
@@ -72,9 +93,9 @@ def register_commands(dp: Dispatcher):
         return
 
     @dp.message_handler(
-        lambda msg: msg.from_user.id not in whitelist,
-        lambda msg: db.get_user_mode(msg.from_user.id),
-        commands=["about"]
+        ~IDFilter(whitelist),
+        UserModeFilter(),
+        CommandAbout()
     )
     async def about_handler(message: Message):
         await message.answer(
@@ -90,9 +111,9 @@ def register_commands(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        lambda msg: msg.from_user.id not in whitelist,
-        lambda msg: db.get_user_mode(msg.from_user.id),
-        commands=["email"]
+        ~IDFilter(whitelist),
+        UserModeFilter(),
+        CommandEmail()
     )
     async def email_handler(message: Message):
         await message.answer_photo(
@@ -101,9 +122,9 @@ def register_commands(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        lambda msg: msg.from_user.id not in whitelist,
-        lambda msg: db.get_user_mode(msg.from_user.id),
-        commands=["github"]
+        ~IDFilter(whitelist),
+        UserModeFilter(),
+        CommandGithub()
     )
     async def github_handler(message: Message):
         reply_markup = InlineKeyboardMarkup()
@@ -119,9 +140,9 @@ def register_commands(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        lambda msg: msg.from_user.id not in whitelist,
-        lambda msg: db.get_user_mode(msg.from_user.id),
-        commands=["linkedin"]
+        ~IDFilter(whitelist),
+        UserModeFilter(),
+        CommandLinkedIn()
     )
     async def linkedin_handler(message: Message):
         reply_markup = InlineKeyboardMarkup()
@@ -137,9 +158,9 @@ def register_commands(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        lambda msg: msg.from_user.id not in whitelist,
-        lambda msg: db.get_user_mode(msg.from_user.id),
-        commands=["current_project"]
+        ~IDFilter(whitelist),
+        UserModeFilter(),
+        CommandCurrentProject()
     )
     async def current_project_handler(message: Message):
         await message.answer(
@@ -155,8 +176,9 @@ def register_commands(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        lambda msg: msg.from_user.id not in whitelist,
-        commands=["signal"]
+        ~IDFilter(whitelist),
+        UserModeFilter(),
+        CommandSignal()
     )
     async def signal_handler(message: Message):
         await message.answer_photo(
@@ -165,14 +187,21 @@ def register_commands(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        lambda msg: msg.from_user.id not in whitelist,
+        ~IDFilter(whitelist),
         content_types=FORWARD_TYPES
     )
     async def forward_handler(message: Message):
-        await message.forward(channel_id)
+        forwarded_to_me = await message.forward(bot_admin)
+
+        if not forwarded_to_me.forward_from:
+            message_id = message.message_id
+            from_user_id = message.from_user.id
+
+            db.store_message_data(message_id, from_user_id)
+        await message.forward(channel_id, disable_notification=True)
 
     @dp.message_handler(
-        lambda msg: msg.from_user.id not in whitelist,
+        ~IDFilter(whitelist),
         content_types=ContentTypes.ANY
     )
     async def trash_handler(message: Message):

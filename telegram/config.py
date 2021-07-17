@@ -4,6 +4,7 @@ from typing import List
 
 config = Config()
 
+bot_admin: int = config("ADMIN", cast=int)
 channel_id: int = config("CHANNEL_ID", cast=int)
 project_key: str = config("PROJECT_KEY")
 token: str = config("TOKEN")
