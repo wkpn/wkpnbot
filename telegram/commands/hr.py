@@ -5,7 +5,7 @@ from aiogram.types import (
     Message
 )
 
-from ..build_reply_markup import build_reply_markup
+from ..reply_markup import hr_reply_markup
 
 
 async def register_hr_commands(dp: Dispatcher, message: Message):
@@ -25,5 +25,5 @@ async def register_hr_commands(dp: Dispatcher, message: Message):
     )
     await message.answer(
         "HR commands are enabled",
-        reply_markup=build_reply_markup(True)
+        reply_markup=hr_reply_markup(True)
     )

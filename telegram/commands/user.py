@@ -4,7 +4,7 @@ from aiogram.types import (
     Message
 )
 
-from ..build_reply_markup import build_reply_markup
+from ..reply_markup import hr_reply_markup
 
 
 async def register_user_commands(
@@ -16,5 +16,5 @@ async def register_user_commands(
     if not is_start:
         await message.answer(
             "HR commands are disabled",
-            reply_markup=build_reply_markup(False)
+            reply_markup=hr_reply_markup(False)
         )

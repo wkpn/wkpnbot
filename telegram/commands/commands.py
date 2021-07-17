@@ -1,11 +1,6 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher.filters import CommandStart, IDFilter, Text
-from aiogram.types import (
-    ContentTypes,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+from aiogram.types import ContentTypes, Message
 from aiogram.utils.markdown import escape_md, text
 
 from .custom_filters import (
@@ -20,7 +15,7 @@ from .custom_filters import (
 from .hr import register_hr_commands
 from .user import register_user_commands
 
-from ..build_reply_markup import build_reply_markup
+from ..reply_markup import hr_reply_markup, inline_reply_markup_link
 from ..config import bot_admin, channel_id, whitelist
 from ..db import db
 from ..logos import Icons
@@ -37,14 +32,12 @@ def register_commands(dp: Dispatcher):
         db.update_user_mode(False, user_id=message.from_user.id)
         await register_user_commands(dp, message)
 
-        reply_keyboard_markup = build_reply_markup(False)
-
         await message.answer(
             text(
                 escape_md(f"Send me your message now. "),
                 f"I will reply *as soon as I can* "
             ),
-            reply_markup=reply_keyboard_markup
+            reply_markup=hr_reply_markup(False)
         )
 
         mention = message.from_user.get_mention(as_html=False)
@@ -126,16 +119,11 @@ def register_commands(dp: Dispatcher):
         CommandGitHub()
     )
     async def github_handler(message: Message):
-        reply_markup = InlineKeyboardMarkup()
-        reply_markup.add(
-            InlineKeyboardButton(
-                text="GitHub", url="https://github.com/wkpn"
-            )
-        )
-
         await message.answer_photo(
             photo=Icons.GITHUB,
-            reply_markup=reply_markup
+            reply_markup=inline_reply_markup_link(
+                "GitHub", "https://github.com/wkpn"
+            )
         )
 
     @dp.message_handler(
@@ -144,16 +132,11 @@ def register_commands(dp: Dispatcher):
         CommandLinkedIn()
     )
     async def linkedin_handler(message: Message):
-        reply_markup = InlineKeyboardMarkup()
-        reply_markup.add(
-            InlineKeyboardButton(
-                text="LinkedIn", url="https://www.linkedin.com/in/wkpn/"
-            )
-        )
-
         await message.answer_photo(
             photo=Icons.LINKEDIN,
-            reply_markup=reply_markup
+            reply_markup=inline_reply_markup_link(
+                "LinkedIn", "https://www.linkedin.com/in/wkpn/"
+            )
         )
 
     @dp.message_handler(
