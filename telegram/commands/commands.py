@@ -15,17 +15,25 @@ from .custom_filters import (
 from .hr import register_hr_commands
 from .user import register_user_commands
 
-from ..reply_markup import hr_reply_markup, inline_reply_markup_link
-from ..config import bot_admin, channel_id, whitelist
+from ..config import bot_admin, channel_id
 from ..db import db
 from ..logos import Icons
+from ..reply_markup import hr_reply_markup, inline_reply_markup_link
+
 
 FORWARD_TYPES = ContentTypes.TEXT | ContentTypes.PHOTO | ContentTypes.DOCUMENT
 
 
+def forward_to_channel(func):
+    async def wrapped(message: Message):
+        result = await func(message)
+        await message.forward(channel_id, disable_notification=True)
+        return result
+    return wrapped
+
+
 def register_commands(dp: Dispatcher):
     @dp.message_handler(
-        ~IDFilter(whitelist),
         CommandStart()
     )
     async def start_handler(message: Message):
@@ -53,7 +61,7 @@ def register_commands(dp: Dispatcher):
         IDFilter(bot_admin),
         content_types=ContentTypes.ANY
     )
-    async def reply(message: Message):
+    async def reply_handler(message: Message):
         if message.reply_to_message.forward_from:
             await message.send_copy(message.reply_to_message.forward_from.id)
         else:
@@ -63,7 +71,6 @@ def register_commands(dp: Dispatcher):
         return
 
     @dp.message_handler(
-        ~IDFilter(whitelist),
         ~UserModeFilter(),
         Text("I'm HR"),
     )
@@ -74,7 +81,6 @@ def register_commands(dp: Dispatcher):
         return
 
     @dp.message_handler(
-        ~IDFilter(whitelist),
         UserModeFilter(),
         Text("I'm not HR"),
     )
@@ -85,10 +91,10 @@ def register_commands(dp: Dispatcher):
         return
 
     @dp.message_handler(
-        ~IDFilter(whitelist),
         UserModeFilter(),
         CommandAbout()
     )
+    @forward_to_channel
     async def about_handler(message: Message):
         await message.answer(
             text(
@@ -103,10 +109,10 @@ def register_commands(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        ~IDFilter(whitelist),
         UserModeFilter(),
         CommandEmail()
     )
+    @forward_to_channel
     async def email_handler(message: Message):
         await message.answer_photo(
             photo=Icons.PROTONMAIL,
@@ -114,10 +120,10 @@ def register_commands(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        ~IDFilter(whitelist),
         UserModeFilter(),
         CommandGitHub()
     )
+    @forward_to_channel
     async def github_handler(message: Message):
         await message.answer_photo(
             photo=Icons.GITHUB,
@@ -127,10 +133,10 @@ def register_commands(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        ~IDFilter(whitelist),
         UserModeFilter(),
         CommandLinkedIn()
     )
+    @forward_to_channel
     async def linkedin_handler(message: Message):
         await message.answer_photo(
             photo=Icons.LINKEDIN,
@@ -140,10 +146,10 @@ def register_commands(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        ~IDFilter(whitelist),
         UserModeFilter(),
         CommandCurrentProject()
     )
+    @forward_to_channel
     async def current_project_handler(message: Message):
         await message.answer(
             text(
@@ -158,10 +164,10 @@ def register_commands(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        ~IDFilter(whitelist),
         UserModeFilter(),
         CommandSignal()
     )
+    @forward_to_channel
     async def signal_handler(message: Message):
         await message.answer_photo(
             photo=Icons.SIGNAL,
@@ -169,9 +175,9 @@ def register_commands(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        ~IDFilter(whitelist),
         content_types=FORWARD_TYPES
     )
+    @forward_to_channel
     async def forward_handler(message: Message):
         forwarded_to_me = await message.forward(bot_admin)
 
@@ -180,10 +186,8 @@ def register_commands(dp: Dispatcher):
             from_user_id = message.from_user.id
 
             db.store_message_data(message_id, from_user_id)
-        await message.forward(channel_id, disable_notification=True)
 
     @dp.message_handler(
-        ~IDFilter(whitelist),
         content_types=ContentTypes.ANY
     )
     async def trash_handler(message: Message):
