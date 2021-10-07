@@ -1,7 +1,7 @@
 from aiogram import Bot, Dispatcher
 from aiogram.types import ParseMode
 
-from .commands import register_commands
+from .handlers import register_handlers
 from .config import token
 
 
@@ -12,7 +12,7 @@ def bot_dispatcher() -> Dispatcher:
     Bot.set_current(dp.bot)
     Dispatcher.set_current(dp)
 
-    register_commands(dp)
+    register_handlers(dp)
 
     return dp
 
