@@ -8,7 +8,7 @@ class DB:
         self._deta = Deta(project_key)
         self._db = self._deta.Base("db")
 
-    def store_message_data(self, message_id: int, from_user_id: int):
+    def set_message_data(self, message_id: int, from_user_id: int):
         self._db.put(
             data={"from_user_id": from_user_id},
             key=str(message_id)

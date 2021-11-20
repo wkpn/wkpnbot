@@ -1,0 +1,9 @@
+# vercel deploying keys
+.vercel/
+
+# other
+.env
+
+LICENSE
+README.md
+vercel.json

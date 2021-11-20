@@ -122,7 +122,7 @@ def register_handlers(dp: Dispatcher):
             message_id = message.message_id
             from_user_id = message.from_user.id
 
-            db.store_message_data(message_id, from_user_id)
+            db.set_message_data(message_id, from_user_id)
 
     @dp.message_handler(
         content_types=ContentTypes.ANY
