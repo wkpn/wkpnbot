@@ -1,20 +1,20 @@
 from aiogram import Bot, Dispatcher
 from aiogram.types import ParseMode
 
+from .config import TOKEN
 from .handlers import register_handlers
-from .config import token
 
 
 def bot_dispatcher() -> Dispatcher:
-    bot = Bot(token=token, parse_mode=ParseMode.MARKDOWN_V2)
-    dp = Dispatcher(bot)
+    bot = Bot(token=TOKEN, parse_mode=ParseMode.MARKDOWN_V2)
+    dispatcher = Dispatcher(bot)
 
-    Bot.set_current(dp.bot)
-    Dispatcher.set_current(dp)
+    Bot.set_current(dispatcher.bot)
+    Dispatcher.set_current(dispatcher)
 
-    register_handlers(dp)
+    register_handlers(dispatcher)
 
-    return dp
+    return dispatcher
 
 
-dispatcher: Dispatcher = bot_dispatcher()
+dp: Dispatcher = bot_dispatcher()

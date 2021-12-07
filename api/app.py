@@ -1,4 +1,4 @@
-from .www import build_application
+from .www import build_webhook
 
 
-app = build_application()
+app = build_webhook()

@@ -1,4 +1,4 @@
-from .serverless import build_application
+from .serverless import build_webhook
 
 
-__all__ = ["build_application"]
+__all__ = ["build_webhook"]

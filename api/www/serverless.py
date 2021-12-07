@@ -6,10 +6,10 @@ from starlette.status import HTTP_200_OK
 
 from .security import secure_endpoint
 
-from ..telegram import dispatcher as dp, secret
+from ..telegram import dp, SECRET
 
 
-def build_application() -> Route:
+def build_webhook() -> Route:
     @secure_endpoint
     async def webhook_handler(request: Request) -> Response:
         raw_update = await request.json()
@@ -20,6 +20,6 @@ def build_application() -> Route:
         finally:
             return Response(status_code=HTTP_200_OK)
 
-    app = Route(f"/webhook-{secret}", webhook_handler, methods=["POST"])
+    webhook = Route(f"/webhook-{SECRET}", webhook_handler, methods=["POST"])
 
-    return app
+    return webhook

@@ -3,8 +3,13 @@ from starlette.config import Config
 
 config = Config()
 
-bot_admin: int = config("ADMIN", cast=int)
-channel_id: int = config("CHANNEL_ID", cast=int)
-project_key: str = config("PROJECT_KEY")
-secret: str = config("SECRET")
-token: str = config("TOKEN")
+# database
+PROJECT_KEY: str = config("PROJECT_KEY")
+
+# telegram
+BOT_ADMIN: int = config("ADMIN", cast=int)
+CHANNEL_ID: int = config("CHANNEL_ID", cast=int)
+TOKEN: str = config("TOKEN")
+
+# webhook
+SECRET: str = config("SECRET")

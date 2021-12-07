@@ -12,8 +12,8 @@ from .custom_commands import (
 )
 from .utils import forward_to_channel, inline_reply_markup_link, user_launched_bot
 
-from ..config import bot_admin
-from ..db import db
+from ..config import BOT_ADMIN
+from ..db import deta_db
 from ..logos import Logos
 
 
@@ -24,9 +24,8 @@ def register_handlers(dp: Dispatcher):
     @dp.message_handler(
         CommandStart()
     )
+    @user_launched_bot
     async def start_handler(message: Message):
-        from_user = message.from_user
-
         await (
             await message.answer(
                 text(
@@ -36,11 +35,8 @@ def register_handlers(dp: Dispatcher):
             )
         ).pin()
 
-        mention = from_user.get_mention(as_html=False)
-        await user_launched_bot(dp, mention, from_user.id)
-
     @dp.message_handler(
-        IDFilter(bot_admin),
+        IDFilter(BOT_ADMIN),
         content_types=ContentTypes.ANY
     )
     async def reply_handler(message: Message):
@@ -48,7 +44,7 @@ def register_handlers(dp: Dispatcher):
             await message.send_copy(message.reply_to_message.forward_from.id)
         else:
             message_id = message.reply_to_message.message_id - 1
-            original_from_user_id = db.get_message_data(message_id)
+            original_from_user_id = deta_db.get_message_data(message_id)
             await message.copy_to(original_from_user_id)  #, reply_to_message_id=message_id)
         return
 
@@ -116,13 +112,13 @@ def register_handlers(dp: Dispatcher):
     )
     @forward_to_channel
     async def forward_handler(message: Message):
-        forwarded_to_me = await message.forward(bot_admin)
+        forwarded_to_me = await message.forward(BOT_ADMIN)
 
         if not forwarded_to_me.forward_from:
             message_id = message.message_id
             from_user_id = message.from_user.id
 
-            db.set_message_data(message_id, from_user_id)
+            deta_db.set_message_data(message_id, from_user_id)
 
     @dp.message_handler(
         content_types=ContentTypes.ANY

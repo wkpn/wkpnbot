@@ -1,5 +1,5 @@
-from .config import secret
-from .dispatcher import dispatcher
+from .config import SECRET
+from .dispatcher import dp
 
 
-__all__ = ["dispatcher", "secret"]
+__all__ = ["dp", "SECRET"]
