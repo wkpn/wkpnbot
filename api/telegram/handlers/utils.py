@@ -3,9 +3,10 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     Message
 )
-from aiogram.utils.markdown import escape_md, text
+from aiogram.utils.markdown import escape_md, text as _text
 
 from ..config import CHANNEL_ID
+from ..db import deta_db
 
 
 def forward_to_channel(handler):
@@ -32,14 +33,24 @@ def user_launched_bot(handler):
         result = await handler(message)
 
         from_user = message.from_user
-        mention = from_user.get_mention(as_html=False)
+        mention = from_user.get_mention()
 
         await message.bot.send_message(
             CHANNEL_ID,
-            text(
+            _text(
                 f"Launched by {mention}",
                 escape_md(f"(id={from_user.id})")
             )
         )
         return result
+    return wrapped
+
+
+def user_not_blocked(handler):
+    async def wrapped(message: Message):
+        user_id = message.from_user.id
+        if deta_db.is_user_blocked(user_id):
+            await message.reply("You are blocked")
+        else:
+            return await handler(message)
     return wrapped
