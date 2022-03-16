@@ -28,7 +28,7 @@ FORWARD_TYPES = ContentTypes.DOCUMENT | ContentTypes.PHOTO | ContentTypes.TEXT
 
 def register_handlers(dp: Dispatcher):
     @dp.message_handler(
-        CommandStart(),
+        CommandStart()
     )
     @user_launched_bot
     @user_not_blocked
@@ -87,7 +87,7 @@ def register_handlers(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        CommandEmail(),
+        CommandEmail()
     )
     @user_not_blocked
     @forward_to_channel
@@ -98,7 +98,7 @@ def register_handlers(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        CommandGitHub(),
+        CommandGitHub()
     )
     @user_not_blocked
     @forward_to_channel
@@ -111,7 +111,7 @@ def register_handlers(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        CommandLinkedIn(),
+        CommandLinkedIn()
     )
     @user_not_blocked
     @forward_to_channel
@@ -124,7 +124,7 @@ def register_handlers(dp: Dispatcher):
         )
 
     @dp.message_handler(
-        CommandSignal(),
+        CommandSignal()
     )
     @user_not_blocked
     @forward_to_channel
