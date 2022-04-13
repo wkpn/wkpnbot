@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 
-logos_path: str = "https://raw.githubusercontent.com/wkpn/wkpnbot/master/telegram/logos/img"
+logos_path: str = "https://raw.githubusercontent.com/wkpn/wkpnbot/master/api/telegram/logos/img"
 
 
 @dataclass(frozen=True)
