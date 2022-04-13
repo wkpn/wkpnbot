@@ -94,7 +94,7 @@ def register_handlers(dp: Dispatcher):
     async def email_handler(message: Message):
         await message.answer_photo(
             photo=Logos.PROTONMAIL,
-            caption=escape_md("wkpn@protonmail.ch")
+            caption=escape_md("wkpn@proton.me")
         )
 
     @dp.message_handler(
