@@ -36,15 +36,12 @@ def register_handlers(dp: Dispatcher):
         await (
             await message.answer(
                 text(
-                    f"Send me your message now",
-                    f"I will reply *as soon as I can*",
+                    f"Send me your message now, I will reply *as soon as I can*",
+                    f"I am *not looking for job offers* at this moment",
                     sep="\n"
                 )
             )
         ).pin()
-        await message.answer(
-            "I am *not looking for job offers* at this moment"
-        )
 
     @dp.message_handler(
         IDFilter(BOT_ADMIN),
@@ -119,7 +116,7 @@ def register_handlers(dp: Dispatcher):
         await message.answer_photo(
             photo=Logos.LINKEDIN,
             reply_markup=inline_reply_markup_link(
-                "LinkedIn", "https://www.linkedin.com/in/wkpn/"
+                "LinkedIn", "https://linkedin.com/in/wkpn"
             )
         )
 
@@ -132,7 +129,7 @@ def register_handlers(dp: Dispatcher):
         await message.answer_photo(
             photo=Logos.SIGNAL,
             reply_markup=inline_reply_markup_link(
-                "+43-670-308-1866", "https://signal.org/download/"
+                "+43-670-308-1866", "https://signal.org/download"
             )
         )
 
