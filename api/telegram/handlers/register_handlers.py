@@ -2,25 +2,16 @@ from aiogram import Dispatcher
 from aiogram.dispatcher.filters import CommandStart, IDFilter
 from aiogram.types import ContentTypes, Message
 from aiogram.utils.exceptions import BotBlocked
-from aiogram.utils.markdown import escape_md, text
+from aiogram.utils.markdown import text
 
-from .custom_commands import (
-    CommandAbout,
-    CommandEmail,
-    CommandGitHub,
-    CommandLinkedIn,
-    CommandSignal,
-)
 from .utils import (
     forward_to_channel,
-    inline_reply_markup_link,
     user_launched_bot,
     user_not_blocked
 )
 
 from ..config import BOT_ADMIN
 from ..db import deta_db
-from ..logos import Logos
 
 
 FORWARD_TYPES = ContentTypes.DOCUMENT | ContentTypes.PHOTO | ContentTypes.TEXT
@@ -68,70 +59,6 @@ def register_handlers(dp: Dispatcher):
             await message.reply("User has blocked the bot")
         finally:
             return
-
-    @dp.message_handler(
-        CommandAbout()
-    )
-    @user_not_blocked
-    @forward_to_channel
-    async def about_handler(message: Message):
-        await message.answer(
-            text(
-                "*Age*: 25",
-                f"*Can speak*: {escape_md('🇷🇺(native), 🇬🇧(C2), 🇩🇪(~B1)')}",
-                sep="\n"
-            )
-        )
-
-    @dp.message_handler(
-        CommandEmail()
-    )
-    @user_not_blocked
-    @forward_to_channel
-    async def email_handler(message: Message):
-        await message.answer_photo(
-            photo=Logos.PROTONMAIL,
-            caption=escape_md("wkpn@proton.me")
-        )
-
-    @dp.message_handler(
-        CommandGitHub()
-    )
-    @user_not_blocked
-    @forward_to_channel
-    async def github_handler(message: Message):
-        await message.answer_photo(
-            photo=Logos.GITHUB,
-            reply_markup=inline_reply_markup_link(
-                "GitHub", "https://github.com/wkpn"
-            )
-        )
-
-    @dp.message_handler(
-        CommandLinkedIn()
-    )
-    @user_not_blocked
-    @forward_to_channel
-    async def linkedin_handler(message: Message):
-        await message.answer_photo(
-            photo=Logos.LINKEDIN,
-            reply_markup=inline_reply_markup_link(
-                "LinkedIn", "https://linkedin.com/in/wkpn"
-            )
-        )
-
-    @dp.message_handler(
-        CommandSignal()
-    )
-    @user_not_blocked
-    @forward_to_channel
-    async def signal_handler(message: Message):
-        await message.answer_photo(
-            photo=Logos.SIGNAL,
-            reply_markup=inline_reply_markup_link(
-                "+43-670-308-1866", "https://signal.org/download"
-            )
-        )
 
     @dp.message_handler(
         content_types=FORWARD_TYPES
