@@ -9,142 +9,16 @@
 <meta name="MobileOptimized" content="176"/>
 <meta name="HandheldFriendly" content="True"/>
 <meta name="robots" content="noindex,nofollow"/>
+<link rel="stylesheet" href="css/style.css">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-    a {
-        color: var(--tg-theme-link-color, #2678b6);
-    }
-    button {
-        display: block;
-        width: 100%;
-        font-size: 16px;
-        margin: 15px 0;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 12px;
-        background-color: var(--tg-theme-button-color, #50a8eb);
-        color: var(--tg-theme-button-text-color, #ffffff);
-        cursor: pointer;
-    }
-
-    button[disabled] {
-        opacity: 0.6;
-        cursor: auto;
-        pointer-events: none;
-    }
-
-    button.close_btn {
-        /*position: fixed;*/
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-radius: 0;
-        margin: 0;
-        padding: 16px 20px;
-        text-transform: uppercase;
-    }
-    body {
-        font-family: sans-serif;
-        padding: 2em 3em;
-
-        background-color: var(--tg-theme-bg-color, #fafafa);
-        color: var(--tg-theme-text-color, #222222);
-        font-size: 16px;
-        margin: 0;
-        color-scheme: var(--tg-color-scheme);
-    }
-    p {
-        line-height: 1.6;
-        color: var(--tg-theme-text-color, #222222);
-    }
-    header {
-        padding-bottom: 1em;
-        color: var(--tg-theme-text-color);
-    }
-    h1 {
-        font-size: 1.5em;
-        line-height: 1;
-        margin-bottom: 0em;
-        margin-left: -0.68em;
-        color: var(--tg-theme-text-color, #0001c3);
-    }
-    h2 {
-        color: var(--tg-theme-text-color, #6241c3);
-        margin-left: -0.68em;
-    }
-    h3 {
-        color: var(--tg-theme-text-color, #6241c3);
-        margin-left: -0.68em;
-        border-bottom: 2px solid #DDD;
-        padding-bottom: 1em;
-        margin-bottom: 2em;
-        margin-top: 1em;
-    }
-    ul {
-        list-style: none;
-    }
-    li {
-        position: relative;
-        padding-bottom: 2em;
-        padding-left: 2em;
-    }
-    li::before {
-        content: "⦿";
-        font-family: "Font Awesome 5 Pro";
-        font-weight: 400;
-        width: 1.5rem;
-        height: 1.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5em;
-        background-color: var(--tg-theme-bg-color, #fafafa);
-        color: var(--tg-theme-text-color, #6241c3);
-        position: absolute;
-        left: -0.68rem;
-        top: 1em;
-    }
-    li::after {
-        content: "";
-        width: 2px;
-        height: 100%;
-        position: absolute;
-        background-color: var(--tg-theme-text-color, #6241c3);
-        left: 0;
-        top: 0;
-        z-index: -1;
-    }
-    li.clear::before {
-        display: none;
-    }
-    li.clear::after {
-        display: none;
-    }
-    li:first-child::after {
-        top: 1.5em;
-    }
-    li:last-child::after {
-        height: 1.5em;
-    }
-    li div {
-        background-color: var(--tg-theme-bg-color, #f6f6f6);
-        border: 1px solid #e6e6e6;
-        padding: 1em 1.5em;
-        border-radius: 0.5em;
-    }
-</style>
+<script src="https://webappcontent.telegram.org/js/jquery.min.js"></script>
+<script src="js/tg.js"></script>
 </head>
-<body style="visibility: hidden;">
+<body>
 <article>
   <header>
     <h1>Egor Dediulin</h1>
-    <h3>25 y.o. Software Engineer (Python)</h3>
+    <h3>25 y.o. Senior Software Engineer</h3>
     <ul>
       <li class="clear">
         <div>
@@ -152,16 +26,6 @@
           <p>Languages: 🇷🇺(native), 🇬🇧(C2), 🇩🇪(~B1)</p>
           <p>5+ years of production experience</p>
           <p>7+ years of python experience</p>
-          <br>
-          <p>
-            Experienced in development of microservices-based web applications with Python, Docker and cloud services
-          </p>
-          <p>Worked successfully in a distributed teams (Canada, US, Europe, India)</p>
-          <br>
-          <p>Cloud services: AWS, GCP, Azure</p>
-          <p>Python frameworks: asyncio, aiohttp, Starlette</p>
-          <p>Databases: Redis, Elasticsearch</p>
-          <p>Testing frameworks: pytest</p>
         </div>
       </li>
     </ul>
@@ -175,6 +39,13 @@
   <ul>
     <li>
       <div>
+        <h2>Senior Software Engineer</h2>
+        <p>08/2022 - present</p>
+        <p>Cracow, Małopolskie, Poland</p>
+      </div>
+    </li>
+    <li>
+      <div>
         <h2>Specialization Lead</h2>
         <p>06/2022 - present</p>
         <p>Cracow, Małopolskie, Poland</p>
@@ -182,8 +53,15 @@
     </li>
     <li>
       <div>
-        <h2>Software Engineer / Team Lead</h2>
+        <h2>Team Lead</h2>
         <p>04/2022 - present</p>
+        <p>Cracow, Małopolskie, Poland</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h2>Software Engineer</h2>
+        <p>04/2022 - 08/2022</p>
         <p>Cracow, Małopolskie, Poland</p>
       </div>
     </li>
@@ -236,31 +114,5 @@
 <button id="github" onclick=tg.openLink("https://github.com/wkpn")>GITHUB</button>
 <button id="linkedin" onclick=tg.openLink("https://linkedin.com/in/wkpn")>LINKEDIN</button>
 
-<script src="https://webappcontent.telegram.org/js/jquery.min.js"></script>
-<script>
-    let tg = Telegram.WebApp;
-
-    tg.ready();
-    tg.expand();
-
-    function setThemeClass() {
-        document.documentElement.className = tg.colorScheme;
-    }
-    tg.onEvent('themeChanged', setThemeClass);
-    setThemeClass();
-
-    $('body').css('visibility', '');
-
-    function webviewClose() {
-        tg.close();
-    }
-
-    tg.MainButton
-        .setText('CLOSE')
-        .show()
-        .onClick(function () {
-            webviewClose();
-        });
-</script>
 </body>
 </html>
