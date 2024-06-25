@@ -1,0 +1,2 @@
+DEFAULT_EMOJI = "5309832892262654231"
+DEFAULT_PHOTO = "https://i.imgur.com/fAXIQ5K.png"

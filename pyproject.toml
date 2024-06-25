@@ -1,0 +1,39 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "wkpnbot"
+dynamic = ["version"]
+description = "Source code for https://t.me/wkpnbot"
+requires-python = ">= 3.10"
+license = "MIT"
+authors = [
+    { name = "Egor Dediulin", email = "wkpn@protonmail.ch" }
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Communications :: Chat"
+]
+dependencies = [
+    "aiogram[fast]==3.8.0",
+    "cachetools==5.3.3",
+    "orjson==3.10.5",
+    "tomlkit==0.12.5; python_version < '3.11'"
+]
+
+[project.scripts]
+wkpnbot = "wkpnbot.webserver:main"
+
+[project.urls]
+Homepage = "https://t.me/wkpnbot"
+Repository = "https://github.com/wkpn/wkpnbot"
+
+[tool.hatch.version]
+path = "wkpnbot/__init__.py"

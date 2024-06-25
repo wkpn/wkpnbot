@@ -1,2 +1,8 @@
-.env
-.vercel/
+.venv/
+
+configs/
+space/
+
+configure.py
+polling.py
+wkpnbot.toml

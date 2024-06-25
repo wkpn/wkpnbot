@@ -1,0 +1,6 @@
+.venv/
+
+space/
+
+configure.py
+polling.py
