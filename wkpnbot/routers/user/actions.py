@@ -1,5 +1,3 @@
-from typing import NoReturn
-
 from aiogram import Bot, F, Router
 from aiogram.enums import ChatType
 from aiogram.types import (
@@ -53,7 +51,7 @@ def build_user_actions_router(forum_id: int) -> Router:
         edited_message: Message,
         bot: Bot,
         messages_record: dict[str, int]
-    ) -> NoReturn:
+    ) -> None:
         forum_message_id = messages_record["forum_message_id"]
 
         await edit_message(
@@ -68,7 +66,7 @@ def build_user_actions_router(forum_id: int) -> Router:
         message_reaction: MessageReactionUpdated,
         bot: Bot,
         messages_record: dict[str, int]
-    ) -> NoReturn:
+    ) -> None:
         user_reactions = message_reaction.new_reaction
 
         if message_reaction.user.is_premium:

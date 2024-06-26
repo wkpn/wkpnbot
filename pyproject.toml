@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "wkpnbot"
 dynamic = ["version"]
 description = "Source code for https://t.me/wkpnbot"
-requires-python = ">= 3.10"
+requires-python = ">=3.10"
 license = "MIT"
 authors = [
     { name = "Egor Dediulin", email = "wkpn@protonmail.ch" }

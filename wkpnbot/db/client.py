@@ -1,5 +1,6 @@
 import asyncio
-from typing import NoReturn, Self
+from types import TracebackType
+from typing import Self
 
 import orjson
 from aiohttp import BytesPayload, ClientSession
@@ -52,6 +53,7 @@ class DBClient:
             if items := _json["items"]:
                 del items[0]["key"]
                 return items[0]
+
             return
 
     async def put(self, table: str, data: dict[str, int]) -> dict[str, int]:
@@ -68,6 +70,7 @@ class DBClient:
                 encoding="utf-8",
                 loads=orjson.loads
             )
+
             if items := items["processed"]["items"]:
                 del items[0]["key"]
                 return items[0]
@@ -75,7 +78,12 @@ class DBClient:
     async def __aenter__(self) -> Self:
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> NoReturn:
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None
+    ) -> None:
         if self._session is not None and not self._session.closed:
             await self._session.close()
             await asyncio.sleep(0.25)

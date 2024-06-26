@@ -1,4 +1,4 @@
-from typing import Any, NoReturn
+from typing import Any
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.exceptions import (
@@ -75,7 +75,7 @@ def configure_dispatcher(dp: Dispatcher, **kwargs: Any) -> None:
     )
     async def bot_added_to_chanel(
         my_chat_member: ChatMemberUpdated, bot: Bot
-    ) -> NoReturn:
+    ) -> None:
         """
         If somebody added this bot as a channel admin, leave the channel immediately.
         """
@@ -87,7 +87,7 @@ def configure_dispatcher(dp: Dispatcher, **kwargs: Any) -> None:
     )
     async def user_blocked_bot(
         my_chat_member: ChatMemberUpdated, bot: Bot, db: DBClient
-    ) -> NoReturn:
+    ) -> None:
         """
         Closes the forum topic if user has blocked the bot.
         """
@@ -105,7 +105,7 @@ def configure_dispatcher(dp: Dispatcher, **kwargs: Any) -> None:
     )
     async def user_unblocked_bot(
         my_chat_member: ChatMemberUpdated, bot: Bot, db: DBClient
-    ) -> NoReturn:
+    ) -> None:
         """
         Reopens the forum topic if user has unblocked the bot.
         """
@@ -128,7 +128,7 @@ def configure_dispatcher(dp: Dispatcher, **kwargs: Any) -> None:
     )
     async def handle_telegram_errors(
         exception: ErrorEvent, message: Message
-    ) -> NoReturn:
+    ) -> None:
         """
         Deletes the message that has caused an exception.
         """

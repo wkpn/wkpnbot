@@ -1,5 +1,3 @@
-from typing import NoReturn
-
 from aiogram import F, Router, md
 from aiogram.enums import ChatType
 from aiogram.filters import CommandStart
@@ -31,7 +29,7 @@ def build_user_commands_router() -> Router:
     @router.message(F.text, CommandStart())
     async def handle_start_command_from_user(
         message: Message
-    ) -> NoReturn:
+    ) -> None:
         user_first_name = message.from_user.first_name
         language_code = message.from_user.language_code
         greetings_text = _greetings(user_first_name, language_code)

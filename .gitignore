@@ -1,8 +1,6 @@
-.venv/
-
-configs/
 space/
 
-configure.py
+configs/nginx.conf
+
 polling.py
 wkpnbot.toml

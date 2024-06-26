@@ -43,7 +43,6 @@ class TopicsManagementMiddleware(BaseMiddleware):
 
         if forum_topic_record := await db.fetch(table=self._table, query=query):
             self._cache[forum_topic_record["chat_id"]] = forum_topic_record
-
             return forum_topic_record
 
         return

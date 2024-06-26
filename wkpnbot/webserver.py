@@ -45,7 +45,7 @@ def build_app(config_file: str, env: str) -> web.Application:
         dispatcher=dp,
         bot=bot,
         secret_token=wh_conf["secret_token"]
-    ).register(app, path=wh_conf["path"])
+    ).register(app, path=f"/{wh_conf['path']}")
 
     setup_application(app, dp, bot=bot)
 

@@ -1,5 +1,3 @@
-from typing import NoReturn
-
 from aiogram import Bot
 from aiogram.types import (
     ContentType,
@@ -17,7 +15,7 @@ async def edit_message(
     chat_id: int,
     edited_message: Message,
     message_id: int
-) -> NoReturn:
+) -> None:
     """
     Helper function for editing messages of any "content_type".
     """

@@ -1,5 +1,4 @@
 from contextlib import suppress
-from typing import NoReturn
 
 from aiogram import Bot, F, Router
 from aiogram.exceptions import (
@@ -63,7 +62,7 @@ def build_forum_actions_router(forum_id: int) -> Router:
         edited_message: Message,
         bot: Bot,
         messages_record: dict[str, int]
-    ) -> NoReturn:
+    ) -> None:
         user_chat_id = messages_record["user_chat_id"]
         user_chat_message_id = messages_record["user_chat_message_id"]
 
@@ -82,7 +81,7 @@ def build_forum_actions_router(forum_id: int) -> Router:
         callback_query: CallbackQuery,
         callback_data: UserUpdateCallback,
         bot: Bot
-    ) -> NoReturn:
+    ) -> None:
         await callback_query.answer(text="🔄 Updating user data...")
 
         user_id = callback_data.user_id
@@ -113,7 +112,7 @@ def build_forum_actions_router(forum_id: int) -> Router:
         message_reaction: MessageReactionUpdated,
         bot: Bot,
         messages_record: dict[str, int]
-    ) -> NoReturn:
+    ) -> None:
         admin_reaction = message_reaction.new_reaction
 
         user_chat_id = messages_record["user_chat_id"]

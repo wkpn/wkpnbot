@@ -1,6 +1,9 @@
-.venv/
-
 space/
 
-configure.py
+.gitignore
+configure_webhook.py
 polling.py
+
+LICENSE
+Makefile
+README.md
