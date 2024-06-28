@@ -54,20 +54,21 @@ def configure_dispatcher(dp: Dispatcher, **kwargs: Any) -> None:
         forum_id=forum_id, table=messages_table
     )
 
+    user_commands_router = build_user_commands_router()
     user_actions_router = build_user_actions_router(
         forum_id=forum_id
     )
     user_actions_router.message.middleware(messages_middleware)
 
-    admin_actions_router = build_forum_actions_router(
+    forum_actions_router = build_forum_actions_router(
         forum_id=forum_id
     )
-    admin_actions_router.message.middleware(messages_middleware)
+    forum_actions_router.message.middleware(messages_middleware)
 
     dp.include_routers(
-        build_user_commands_router(),
+        user_commands_router,
         user_actions_router,
-        admin_actions_router
+        forum_actions_router
     )
 
     @dp.my_chat_member(
@@ -96,9 +97,16 @@ def configure_dispatcher(dp: Dispatcher, **kwargs: Any) -> None:
             table=topics_table,
             query=dict(chat_id=my_chat_member.chat.id)
         )
-        forum_topic_id = record["forum_topic_id"]
 
-        await bot.close_forum_topic(chat_id=forum_id, message_thread_id=forum_topic_id)
+        # If the user just blocked the bot without any interactions
+        # with it, there is no need to close the forum topic that
+        # doesn't exist yet.
+
+        if record:
+            await bot.close_forum_topic(
+                chat_id=forum_id,
+                message_thread_id=record["forum_topic_id"]
+            )
 
     @dp.my_chat_member(
         ChatMemberUpdatedFilter(member_status_changed=MEMBER)
@@ -114,9 +122,17 @@ def configure_dispatcher(dp: Dispatcher, **kwargs: Any) -> None:
             table=topics_table,
             query=dict(chat_id=my_chat_member.chat.id)
         )
-        forum_topic_id = record["forum_topic_id"]
 
-        await bot.reopen_forum_topic(chat_id=forum_id, message_thread_id=forum_topic_id)
+        # Check if user unblocked the bot without starting it previously.
+        # In this case `my_chat_member` update will be before `message`,
+        # and if there is no record for the forum topic, we don't need to
+        # reopen it since it doesn't exist yet.
+
+        if record:
+            await bot.reopen_forum_topic(
+                chat_id=forum_id,
+                message_thread_id=record["forum_topic_id"]
+            )
 
     @dp.error(
         ExceptionTypeFilter(
