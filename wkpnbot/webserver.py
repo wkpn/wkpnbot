@@ -52,16 +52,20 @@ def build_app(config_file: str, env: str) -> web.Application:
     return app
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--config-file", type=str, required=True)
-    parser.add_argument("--env", type=str, required=False, default="prod")
+    parser.add_argument("--env", type=str, default="prod", required=False)
     parser.add_argument("--path", type=str, required=True)
 
     args = parser.parse_args()
 
-    web.run_app(build_app(args.config_file, args.env), path=args.path, access_log=None)
+    web.run_app(
+        build_app(args.config_file, args.env),
+        path=args.path,
+        access_log=None
+    )
 
 
 if __name__ == "__main__":

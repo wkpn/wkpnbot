@@ -1,7 +1,15 @@
-from typing import Any, Awaitable, Callable
+from typing import (
+    Any,
+    Awaitable,
+    Callable
+)
 
 from aiogram import BaseMiddleware
-from aiogram.types import Message, ReplyParameters, TextQuote
+from aiogram.types import (
+    Message,
+    ReplyParameters,
+    TextQuote
+)
 
 
 def _prepare_quote_params(quote: TextQuote | None) -> dict[str, Any]:
@@ -33,7 +41,7 @@ class MessagesMiddleware(BaseMiddleware):
         ],
         event: Message,
         data: dict[str, Any]
-    ) -> Any:
+    ) -> None:
         db = data["db"]
         event_context = data["event_context"]
         chat_id = event_context.chat_id

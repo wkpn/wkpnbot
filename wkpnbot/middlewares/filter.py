@@ -1,4 +1,8 @@
-from typing import Any, Awaitable, Callable
+from typing import (
+    Any,
+    Awaitable,
+    Callable
+)
 
 from aiogram import BaseMiddleware
 from aiogram.enums import ContentType

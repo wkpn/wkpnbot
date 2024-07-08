@@ -22,9 +22,9 @@ classifiers = [
     "Topic :: Communications :: Chat"
 ]
 dependencies = [
-    "aiogram[fast]==3.8.0",
+    "aiogram[fast]==3.10.0",
     "cachetools==5.3.3",
-    "orjson==3.10.5",
+    "orjson==3.10.6",
     "tomlkit==0.12.5; python_version < '3.11'"
 ]
 

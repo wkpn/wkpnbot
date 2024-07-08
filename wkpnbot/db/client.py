@@ -3,7 +3,10 @@ from types import TracebackType
 from typing import Self
 
 import orjson
-from aiohttp import BytesPayload, ClientSession
+from aiohttp import (
+    BytesPayload,
+    ClientSession
+)
 
 
 class DBClient:

@@ -1,7 +1,14 @@
-from typing import Any, Awaitable, Callable
+from typing import (
+    Any,
+    Awaitable,
+    Callable
+)
 
 from aiogram import BaseMiddleware
-from aiogram.types import Message, MessageReactionUpdated
+from aiogram.types import (
+    Message,
+    MessageReactionUpdated
+)
 
 
 class InteractionsMiddleware(BaseMiddleware):

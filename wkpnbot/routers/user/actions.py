@@ -1,4 +1,8 @@
-from aiogram import Bot, F, Router
+from aiogram import (
+    Bot,
+    F,
+    Router
+)
 from aiogram.enums import ChatType
 from aiogram.types import (
     Message,
@@ -7,7 +11,10 @@ from aiogram.types import (
     ReplyParameters
 )
 
-from ..edit_message import edit_message
+from ..common import (
+    attach_view_edited_message_edit_date_handler,
+    edit_message
+)
 
 
 def build_user_actions_router(forum_id: int) -> Router:
@@ -20,6 +27,7 @@ def build_user_actions_router(forum_id: int) -> Router:
 
     router = Router(name="user.actions")
 
+    router.callback_query.filter(F.message.chat.type == ChatType.PRIVATE)
     router.edited_message.filter(F.chat.type == ChatType.PRIVATE)
     router.message.filter(F.chat.type == ChatType.PRIVATE)
     router.message_reaction.filter(F.chat.type == ChatType.PRIVATE)
@@ -61,6 +69,8 @@ def build_user_actions_router(forum_id: int) -> Router:
             message_id=forum_message_id
         )
 
+    attach_view_edited_message_edit_date_handler(router)
+
     @router.message_reaction()
     async def handle_message_reaction_from_user(
         message_reaction: MessageReactionUpdated,
@@ -72,7 +82,9 @@ def build_user_actions_router(forum_id: int) -> Router:
         if message_reaction.user.is_premium:
             # filter for regular reactions, this can yield more than one
             # we need to take the last one
-            user_reactions = list(filter(lambda r: isinstance(r, ReactionTypeEmoji), user_reactions))[-1:]
+            user_reactions = list(
+                filter(lambda r: isinstance(r, ReactionTypeEmoji), user_reactions)
+            )[-1:]
 
         forum_message_id = messages_record["forum_message_id"]
 

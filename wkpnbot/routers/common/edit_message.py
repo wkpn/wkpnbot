@@ -9,6 +9,8 @@ from aiogram.types import (
     Message
 )
 
+from ...utils import build_edited_message_keyboard
+
 
 async def edit_message(
     bot: Bot,
@@ -22,20 +24,23 @@ async def edit_message(
 
     caption = edited_message.md_text
     media = None
+    reply_markup = build_edited_message_keyboard(edited_message.edit_date)
 
     match edited_message.content_type:
         case ContentType.TEXT:
             await bot.edit_message_text(
                 text=caption,
                 chat_id=chat_id,
-                message_id=message_id
+                message_id=message_id,
+                reply_markup=reply_markup
             )
             return
         case ContentType.VOICE:
             await bot.edit_message_caption(
                 caption=caption,
                 chat_id=chat_id,
-                message_id=message_id
+                message_id=message_id,
+                reply_markup=reply_markup
             )
             return
         case ContentType.ANIMATION:
@@ -70,5 +75,6 @@ async def edit_message(
     await bot.edit_message_media(
         media=media,
         chat_id=chat_id,
-        message_id=message_id
+        message_id=message_id,
+        reply_markup=reply_markup
     )

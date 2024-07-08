@@ -1,6 +1,10 @@
 from contextlib import suppress
 
-from aiogram import Bot, F, Router
+from aiogram import (
+    Bot,
+    F,
+    Router
+)
 from aiogram.exceptions import (
     TelegramBadRequest,
     TelegramForbiddenError
@@ -13,11 +17,15 @@ from aiogram.types import (
     ReplyParameters
 )
 
-from ..edit_message import edit_message
+from ..common import (
+    attach_view_edited_message_edit_date_handler,
+    edit_message
+
+)
 from ...utils import (
     UserUpdateCallback,
     build_user_card_keyboard,
-    prepare_user_card_info
+    make_user_card_info
 )
 
 
@@ -74,6 +82,8 @@ def build_forum_actions_router(forum_id: int) -> Router:
                 message_id=user_chat_message_id
             )
 
+    attach_view_edited_message_edit_date_handler(router)
+
     @router.callback_query(
         UserUpdateCallback.filter(F.type == "update")
     )
@@ -87,24 +97,23 @@ def build_forum_actions_router(forum_id: int) -> Router:
         user_id = callback_data.user_id
         message = callback_query.message
 
-        photo, caption, user_link, user_full_name = await prepare_user_card_info(
+        photo, caption, tg_link, full_name = await make_user_card_info(
             bot, user_id
         )
-        reply_markup = build_user_card_keyboard(user_id, user_link)
 
         await message.edit_media(
             media=InputMediaPhoto(
                 media=photo,
                 caption=caption
             ),
-            reply_markup=reply_markup
+            reply_markup=build_user_card_keyboard(user_id, tg_link)
         )
 
         with suppress(TelegramBadRequest):
             await bot.edit_forum_topic(
                 chat_id=forum_id,
                 message_thread_id=message.message_thread_id,
-                name=user_full_name
+                name=full_name
             )
 
     @router.message_reaction()

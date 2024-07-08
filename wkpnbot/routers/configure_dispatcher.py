@@ -1,6 +1,10 @@
 from typing import Any
 
-from aiogram import Bot, Dispatcher, F
+from aiogram import (
+    Bot,
+    Dispatcher,
+    F
+)
 from aiogram.exceptions import (
     TelegramBadRequest,
     TelegramForbiddenError,
@@ -26,9 +30,9 @@ from .user import (
 )
 from ..db import DBClient
 from ..middlewares import (
+    FilterMiddleware,
     InteractionsMiddleware,
     MessagesMiddleware,
-    FilterMiddleware,
     TopicsManagementMiddleware
 )
 
@@ -74,7 +78,7 @@ def configure_dispatcher(dp: Dispatcher, **kwargs: Any) -> None:
     @dp.my_chat_member(
         ChatMemberUpdatedFilter(member_status_changed=PROMOTED_TRANSITION)
     )
-    async def bot_added_to_chanel(
+    async def bot_added_to_channel(
         my_chat_member: ChatMemberUpdated, bot: Bot
     ) -> None:
         """
@@ -93,16 +97,14 @@ def configure_dispatcher(dp: Dispatcher, **kwargs: Any) -> None:
         Closes the forum topic if user has blocked the bot.
         """
 
-        record = await db.fetch(
-            table=topics_table,
-            query=dict(chat_id=my_chat_member.chat.id)
-        )
-
         # If the user just blocked the bot without any interactions
         # with it, there is no need to close the forum topic that
         # doesn't exist yet.
 
-        if record:
+        if record := await db.fetch(
+            table=topics_table,
+            query=dict(chat_id=my_chat_member.chat.id)
+        ):
             await bot.close_forum_topic(
                 chat_id=forum_id,
                 message_thread_id=record["forum_topic_id"]
@@ -118,17 +120,15 @@ def configure_dispatcher(dp: Dispatcher, **kwargs: Any) -> None:
         Reopens the forum topic if user has unblocked the bot.
         """
 
-        record = await db.fetch(
-            table=topics_table,
-            query=dict(chat_id=my_chat_member.chat.id)
-        )
-
         # Check if user unblocked the bot without starting it previously.
         # In this case `my_chat_member` update will be before `message`,
         # and if there is no record for the forum topic, we don't need to
         # reopen it since it doesn't exist yet.
 
-        if record:
+        if record := await db.fetch(
+            table=topics_table,
+            query=dict(chat_id=my_chat_member.chat.id)
+        ):
             await bot.reopen_forum_topic(
                 chat_id=forum_id,
                 message_thread_id=record["forum_topic_id"]

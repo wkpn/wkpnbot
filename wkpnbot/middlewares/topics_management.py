@@ -1,12 +1,21 @@
-from typing import Any, Awaitable, Callable
+from typing import (
+    Any,
+    Awaitable,
+    Callable
+)
 
-from aiogram import Bot, BaseMiddleware
+from aiogram import (
+    Bot,
+    BaseMiddleware
+)
 from aiogram.types import Message
 from cachetools import LRUCache
 
 from ..db import DBClient
-from ..utils import build_user_card_keyboard, prepare_user_card_info
-from ..utils.defaults import DEFAULT_EMOJI
+from ..utils import (
+    build_user_card_keyboard,
+    make_user_card_info
+)
 
 
 class TopicsManagementMiddleware(BaseMiddleware):
@@ -21,6 +30,7 @@ class TopicsManagementMiddleware(BaseMiddleware):
         self._forum_id = forum_id
         self._table = table
         self._cache = LRUCache(maxsize=cache_size)
+        # TODO: remove user from cache when topic is wiped
 
     async def find_topic(
         self,
@@ -57,19 +67,17 @@ class TopicsManagementMiddleware(BaseMiddleware):
     ) -> dict[str, int]:
         user_forum_topic = await bot.create_forum_topic(
             chat_id=self._forum_id,
-            name=message.from_user.full_name,
-            icon_custom_emoji_id=DEFAULT_EMOJI
+            name=message.from_user.full_name
         )
 
-        photo, caption, user_link, _ = await prepare_user_card_info(bot, user_chat_id)
-        reply_markup = build_user_card_keyboard(user_chat_id, user_link)
+        photo, caption, tg_link, _ = await make_user_card_info(bot, user_chat_id)
 
         await bot.send_photo(
             chat_id=self._forum_id,
             photo=photo,
             message_thread_id=user_forum_topic.message_thread_id,
             caption=caption,
-            reply_markup=reply_markup
+            reply_markup=build_user_card_keyboard(user_chat_id, tg_link)
         )
 
         self._cache[user_chat_id] = await db.put(
