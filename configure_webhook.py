@@ -2,14 +2,13 @@ import asyncio
 import argparse
 import sys
 
-from aiogram import Bot
-
-
 if sys.version_info < (3, 11):
     import tomlkit as toml
 else:
     # python3.11+ has a builtin tomllib module
     import tomllib as toml
+
+from aiogram import Bot
 
 
 async def configure(config_file: str, env: str) -> None:

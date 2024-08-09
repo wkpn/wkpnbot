@@ -27,7 +27,7 @@ class FilterMiddleware(BaseMiddleware):
             await event.delete()
             return
 
-        # those are and they can be matched
+        # those are, and they can be matched
         match event.content_type:
             case (
                 ContentType.FORUM_TOPIC_CLOSED |

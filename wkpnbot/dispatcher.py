@@ -12,8 +12,11 @@ from aiogram.client.session.aiohttp import AiohttpSession
 from .routers import configure_dispatcher
 
 
-def create_bot_and_dispatcher(bot_token: str, **kwargs: Any) -> tuple[Bot, Dispatcher]:
-    def _orjson_dumps(value):
+def create_bot_and_dispatcher(
+    bot_token: str,
+    **kwargs: Any
+) -> tuple[Bot, Dispatcher]:
+    def _orjson_dumps(value: Any) -> str:
         return orjson.dumps(value).decode()
 
     bot = Bot(

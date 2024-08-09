@@ -1,6 +1,11 @@
 import asyncio
+import sys
 from types import TracebackType
-from typing import Self
+
+if sys.version_info < (3, 11):
+    from typing_extensions import Self
+else:
+    from typing import Self
 
 import orjson
 from aiohttp import (
@@ -19,7 +24,7 @@ class DBClient:
         self._session = None
 
     @classmethod
-    def from_project_key(cls, base_url: str, project_key: str) -> "DBClient":
+    def from_project_key(cls, base_url: str, project_key: str) -> Self:
         return cls(
             base_url=base_url,
             project_key=project_key,
@@ -38,7 +43,11 @@ class DBClient:
 
         return self._session
 
-    async def fetch(self, table: str, query: dict[str, int]) -> dict[str, int] | None:
+    async def fetch(
+        self,
+        table: str,
+        query: dict[str, int]
+    ) -> dict[str, int] | None:
         session = await self.get_session()
 
         async with session.post(
@@ -59,7 +68,11 @@ class DBClient:
 
             return
 
-    async def put(self, table: str, data: dict[str, int]) -> dict[str, int]:
+    async def put(
+        self,
+        table: str,
+        data: dict[str, int]
+    ) -> dict[str, int]:
         session = await self.get_session()
 
         async with session.put(

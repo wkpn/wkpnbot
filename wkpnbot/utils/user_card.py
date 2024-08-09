@@ -14,7 +14,10 @@ def _join(*strings: str, times: int = 2) -> str:
     return ("\n" * times).join(strings)
 
 
-async def make_user_card_info(bot: Bot, user_id: int) -> tuple[str, str, str | None, str]:
+async def make_user_card_info(
+    bot: Bot,
+    user_id: int
+) -> tuple[str, str, str | None, str]:
     short_info = []
 
     user_info = await bot.get_chat(user_id)

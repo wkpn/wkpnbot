@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.2.0 - August 9th, 2024
+
+### Changed
+
+- Update typings and imports.
+- Update `aiogram` to 3.11.0.
+- Update `cachetools` to 5.4.0.
+- Update `orjson` to 3.10.7.
+- Update `tomlkit` to 0.13.0.
+
 ## 2.1.0 - July 8th, 2024
 
 ### Added
