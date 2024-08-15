@@ -8,8 +8,12 @@ from aiogram import (
     Bot,
     BaseMiddleware
 )
-from aiogram.types import Message
-from cachetools import LRUCache
+from aiogram.types import (
+    CallbackQuery,
+    Message,
+    TelegramObject
+)
+from cachetools import TTLCache
 
 from ..db import DBClient
 from ..utils import (
@@ -26,11 +30,17 @@ class TopicsManagementMiddleware(BaseMiddleware):
     the user and caches it (guaranteed to happen on a first /start command from the user).
     """
 
-    def __init__(self, forum_id: int, table: str, cache_size: int = 10):
+    def __init__(
+        self,
+        forum_id: int,
+        table: str,
+        cache_size: int = 10,
+        ttl: int = 60
+    ):
         self._forum_id = forum_id
         self._table = table
-        self._cache = LRUCache(maxsize=cache_size)
-        # TODO: remove user from cache when topic is wiped
+        # TODO: find better ttl cache implementation
+        self._cache = TTLCache(maxsize=cache_size, ttl=ttl)
 
     async def find_topic(
         self,
@@ -38,7 +48,7 @@ class TopicsManagementMiddleware(BaseMiddleware):
         *,
         chat_id: int | None = None,
         forum_topic_id: int | None = None
-    ) -> dict[str, int] | None:
+    ) -> dict[str, int | str] | None:
         if chat_id:
             if chat_id in self._cache:
                 return self._cache[chat_id]
@@ -64,7 +74,7 @@ class TopicsManagementMiddleware(BaseMiddleware):
         bot: Bot,
         user_chat_id: int,
         message: Message
-    ) -> dict[str, int]:
+    ) -> dict[str, int | str]:
         user_forum_topic = await bot.create_forum_topic(
             chat_id=self._forum_id,
             name=message.from_user.full_name
@@ -82,7 +92,7 @@ class TopicsManagementMiddleware(BaseMiddleware):
 
         self._cache[user_chat_id] = await db.put(
             table=self._table,
-            data=dict(
+            item=dict(
                 chat_id=user_chat_id,
                 forum_topic_id=user_forum_topic.message_thread_id
             )
@@ -93,14 +103,19 @@ class TopicsManagementMiddleware(BaseMiddleware):
     async def __call__(
         self,
         handler: Callable[
-            [Message, dict[str, Any]], Awaitable[Any]
+            [TelegramObject, dict[str, Any]], Awaitable[Any]
         ],
-        event: Message,
+        event: Message | CallbackQuery,
         data: dict[str, Any]
     ) -> Any:
         db = data["db"]
         event_context = data["event_context"]
         chat_id = event_context.chat_id
+
+        if isinstance(event, CallbackQuery):
+            message = event.message
+        else:
+            message = event
 
         if chat_id == self._forum_id:
             forum_topic_record = await self.find_topic(
@@ -111,7 +126,7 @@ class TopicsManagementMiddleware(BaseMiddleware):
                 db, chat_id=chat_id
             )):
                 forum_topic_record = await self.create_topic(
-                    db, bot=data["bot"], user_chat_id=chat_id, message=event
+                    db, bot=data["bot"], user_chat_id=chat_id, message=message
                 )
 
         data["forum_topic_record"] = forum_topic_record

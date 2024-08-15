@@ -15,20 +15,20 @@ from aiohttp import (
 
 
 class DBClient:
-    __slots__ = ("_base_url", "_base_path", "_project_key", "_session")
+    __slots__ = ("_base_url", "_base_path", "_data_key", "_session")
 
-    def __init__(self, base_url: str, project_key: str, project_id: str):
+    def __init__(self, base_url: str, data_key: str, collection_id: str):
         self._base_url = base_url
-        self._base_path = f"/v1/{project_id}"
-        self._project_key = project_key
+        self._base_path = f"/v1/{collection_id}"
+        self._data_key = data_key
         self._session = None
 
     @classmethod
-    def from_project_key(cls, base_url: str, project_key: str) -> Self:
+    def from_data_key(cls, base_url: str, data_key: str) -> Self:
         return cls(
             base_url=base_url,
-            project_key=project_key,
-            project_id=project_key.split("_")[0]
+            data_key=data_key,
+            collection_id=data_key.split("_")[0]
         )
 
     async def get_session(self) -> ClientSession:
@@ -37,17 +37,35 @@ class DBClient:
                 base_url=self._base_url,
                 headers={
                     "Content-type": "application/json",
-                    "X-API-Key": self._project_key
+                    "X-API-Key": self._data_key
                 }
             )
 
         return self._session
 
+    async def delete(
+        self, table: str, key: int | str
+    ) -> None:
+        session = await self.get_session()
+
+        async with session.delete(
+            url=f"{self._base_path}/{table}/items/{key}"
+        ):
+            # we don't care about response there
+            return
+
+    async def delete_many(
+        self, table: str, keys: list[int | str]
+    ) -> None:
+        if not keys:
+            return
+
+        tasks = (self.delete(table=table, key=key) for key in keys)
+        await asyncio.gather(*tasks)
+
     async def fetch(
-        self,
-        table: str,
-        query: dict[str, int]
-    ) -> dict[str, int] | None:
+        self, table: str, query: dict[str, int]
+    ) -> dict[str, int | str] | None:
         session = await self.get_session()
 
         async with session.post(
@@ -63,33 +81,61 @@ class DBClient:
             )
 
             if items := _json["items"]:
-                del items[0]["key"]
                 return items[0]
 
             return
 
+    async def fetch_many(
+        self, table: str, query: dict[str, int], limit: int = 100
+    ) -> list[dict[str, int | str]] | None:
+        session = await self.get_session()
+
+        items = []
+        last = ""
+
+        while True:
+            async with session.post(
+                url=f"{self._base_path}/{table}/query",
+                data=BytesPayload(
+                    value=orjson.dumps(
+                        {"query": [query], "limit": limit, "last": last}
+                    ),
+                    content_type="application/json"
+                )
+            ) as response:
+                _json = await response.json(
+                    encoding="utf-8", loads=orjson.loads
+                )
+
+                items.extend(_json["items"])
+
+                if _last := _json["paging"].get("last"):
+                    last = _last
+                else:
+                    break
+
+        if items:
+            return items
+
+        return
+
     async def put(
-        self,
-        table: str,
-        data: dict[str, int]
-    ) -> dict[str, int]:
+        self, table: str, item: dict[str, int]
+    ) -> dict[str, int | str]:
         session = await self.get_session()
 
         async with session.put(
             url=f"{self._base_path}/{table}/items",
             data=BytesPayload(
-                value=orjson.dumps({"items": [data]}),
+                value=orjson.dumps({"items": [item]}),
                 content_type="application/json"
             )
         ) as response:
             items = await response.json(
-                encoding="utf-8",
-                loads=orjson.loads
+                encoding="utf-8", loads=orjson.loads
             )
 
-            if items := items["processed"]["items"]:
-                del items[0]["key"]
-                return items[0]
+            return items["processed"]["items"][0]
 
     async def __aenter__(self) -> Self:
         return self

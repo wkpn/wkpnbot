@@ -26,9 +26,9 @@ def build_app(config_file: str, env: str) -> web.Application:
     db_conf = config["database"]
     wh_conf = config["webhook"]
 
-    db = DBClient.from_project_key(
+    db = DBClient.from_data_key(
         base_url=db_conf["base_url"],
-        project_key=db_conf[env]["project_key"]
+        data_key=db_conf[env]["data_key"]
     )
 
     bot, dp = create_bot_and_dispatcher(

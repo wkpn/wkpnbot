@@ -5,9 +5,10 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from .callbacks import (
     EditedMessageCallback,
-    UserUpdateCallback
+    UserUpdateCallback,
+    WipeForumTopicCallback
 )
-from .defaults import DEFAULT_PRIVACY_POLICY_LINK
+from .defaults import PRIVACY_POLICY_LINK
 
 
 def build_edited_message_keyboard(
@@ -29,7 +30,7 @@ def build_privacy_policy_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.button(
         text="🔒 Privacy Policy",
-        url=DEFAULT_PRIVACY_POLICY_LINK
+        url=PRIVACY_POLICY_LINK
     )
 
     return builder.as_markup()
@@ -51,5 +52,17 @@ def build_user_card_keyboard(
 
     if tg_link:
         builder.button(text="🪪 Profile", url=tg_link)
+
+    return builder.as_markup()
+
+
+def build_wipe_forum_topic_keyboard() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text="🗑 Wipe",
+        callback_data=WipeForumTopicCallback(
+            type="wipe"
+        )
+    )
 
     return builder.as_markup()

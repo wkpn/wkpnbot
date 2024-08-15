@@ -35,7 +35,7 @@ def build_user_actions_router(forum_id: int) -> Router:
     @router.message()
     async def handle_message_from_user(
         message: Message,
-        forum_topic_record: dict[str, int],
+        forum_topic_record: dict[str, int | str],
         reply_parameters: ReplyParameters | None = None
     ) -> tuple[int, int]:
         message_thread_id = forum_topic_record["forum_topic_id"]
@@ -58,7 +58,7 @@ def build_user_actions_router(forum_id: int) -> Router:
     async def handle_edited_message_from_user(
         edited_message: Message,
         bot: Bot,
-        messages_record: dict[str, int]
+        messages_record: dict[str, int | str]
     ) -> None:
         forum_message_id = messages_record["forum_message_id"]
 
@@ -75,10 +75,11 @@ def build_user_actions_router(forum_id: int) -> Router:
     async def handle_message_reaction_from_user(
         message_reaction: MessageReactionUpdated,
         bot: Bot,
-        messages_record: dict[str, int]
+        messages_record: dict[str, int | str]
     ) -> None:
         user_reactions = message_reaction.new_reaction
 
+        # TODO: refactor this part
         if message_reaction.user.is_premium:
             # filter for regular reactions, this can yield more than one
             # we need to take the last one

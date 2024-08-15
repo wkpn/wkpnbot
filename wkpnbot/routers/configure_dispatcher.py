@@ -23,7 +23,10 @@ from aiogram.types import (
     Message
 )
 
-from .forum import build_forum_actions_router
+from .forum import (
+    build_forum_actions_router,
+    build_forum_commands_router
+)
 from .user import (
     build_user_actions_router,
     build_user_commands_router
@@ -43,9 +46,12 @@ def configure_dispatcher(dp: Dispatcher, **kwargs: Any) -> None:
     topics_table = kwargs["topics_table"]
 
     dp.message.outer_middleware(FilterMiddleware())
-    dp.message.outer_middleware(
-        TopicsManagementMiddleware(forum_id=forum_id, table=topics_table)
+
+    topic_management_middleware = TopicsManagementMiddleware(
+        forum_id=forum_id, table=topics_table
     )
+    dp.callback_query.outer_middleware(topic_management_middleware)
+    dp.message.outer_middleware(topic_management_middleware)
 
     interactions_middleware = InteractionsMiddleware(
         forum_id=forum_id, table=messages_table
@@ -64,14 +70,18 @@ def configure_dispatcher(dp: Dispatcher, **kwargs: Any) -> None:
     )
     user_actions_router.message.middleware(messages_middleware)
 
-    forum_actions_router = build_forum_actions_router(
+    forum_commands_router = build_forum_commands_router(
         forum_id=forum_id
+    )
+    forum_actions_router = build_forum_actions_router(
+        forum_id=forum_id, messages_table=messages_table, topics_table=topics_table
     )
     forum_actions_router.message.middleware(messages_middleware)
 
     dp.include_routers(
         user_commands_router,
         user_actions_router,
+        forum_commands_router,
         forum_actions_router
     )
 
@@ -148,5 +158,5 @@ def configure_dispatcher(dp: Dispatcher, **kwargs: Any) -> None:
         """
         Deletes the message that has caused an exception.
         """
-
+        # TODO: make this more useful
         await message.delete()

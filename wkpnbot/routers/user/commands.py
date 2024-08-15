@@ -34,7 +34,7 @@ def build_user_commands_router() -> Router:
     @router.message(F.text, CommandPrivacy())
     async def handle_privacy_command_from_user(
         message: Message
-    ):
+    ) -> None:
         await message.answer(
             text="Click on this link to read",
             reply_markup=build_privacy_policy_keyboard()

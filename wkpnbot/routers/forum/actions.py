@@ -14,6 +14,7 @@ from aiogram.types import (
     InputMediaPhoto,
     Message,
     MessageReactionUpdated,
+    ReactionTypeCustomEmoji,
     ReplyParameters
 )
 
@@ -22,14 +23,21 @@ from ..common import (
     edit_message
 
 )
+from ...db import DBClient
 from ...utils import (
+    TRASH_EMOJI_ID,
     UserUpdateCallback,
+    WipeForumTopicCallback,
     build_user_card_keyboard,
     make_user_card_info
 )
 
 
-def build_forum_actions_router(forum_id: int) -> Router:
+def build_forum_actions_router(
+    forum_id: int,
+    messages_table: str,
+    topics_table: str
+) -> Router:
     """
     All forum interactions take place here.
     Forum admin can send a message (can be forwarded, can be a reply, can contain media, etc.).
@@ -48,7 +56,7 @@ def build_forum_actions_router(forum_id: int) -> Router:
     @router.message()
     async def handle_message_in_forum(
         message: Message,
-        forum_topic_record: dict[str, int],
+        forum_topic_record: dict[str, int | str],
         reply_parameters: ReplyParameters | None = None
     ) -> tuple[int, int]:
         user_chat_id = forum_topic_record["chat_id"]
@@ -69,7 +77,7 @@ def build_forum_actions_router(forum_id: int) -> Router:
     async def handle_edited_message_in_forum(
         edited_message: Message,
         bot: Bot,
-        messages_record: dict[str, int]
+        messages_record: dict[str, int | str]
     ) -> None:
         user_chat_id = messages_record["user_chat_id"]
         user_chat_message_id = messages_record["user_chat_message_id"]
@@ -116,16 +124,53 @@ def build_forum_actions_router(forum_id: int) -> Router:
                 name=full_name
             )
 
+    @router.callback_query(
+        WipeForumTopicCallback.filter(F.type == "wipe")
+    )
+    async def handle_wipe_forum_topic(
+        callback_query: CallbackQuery,
+        bot: Bot,
+        db: DBClient,
+        forum_topic_record: dict[str, int | str]
+    ) -> None:
+        await callback_query.answer(text="🗑️ Wiping forum topic...")
+
+        forum_topic_message_ids = [
+            item["key"]
+            for item in await db.fetch_many(
+                table=messages_table,
+                query=dict(user_chat_id=forum_topic_record["chat_id"])
+            )
+        ]
+
+        await db.delete_many(table=messages_table, keys=forum_topic_message_ids)
+        await db.delete(table=topics_table, key=forum_topic_record["key"])
+
+        await bot.delete_forum_topic(
+            chat_id=forum_id,
+            message_thread_id=forum_topic_record["forum_topic_id"]
+        )
+
     @router.message_reaction()
     async def handle_message_reaction_in_forum(
         message_reaction: MessageReactionUpdated,
         bot: Bot,
-        messages_record: dict[str, int]
+        db: DBClient,
+        messages_record: dict[str, int | str]
     ) -> None:
         admin_reaction = message_reaction.new_reaction
 
         user_chat_id = messages_record["user_chat_id"]
         user_chat_message_id = messages_record["user_chat_message_id"]
+
+        if premium_reactions := tuple(
+            filter(lambda r: isinstance(r, ReactionTypeCustomEmoji), admin_reaction)
+        ):
+            if any(r.custom_emoji_id == TRASH_EMOJI_ID for r in premium_reactions):
+                await bot.delete_message(chat_id=forum_id, message_id=message_reaction.message_id)
+                await bot.delete_message(chat_id=user_chat_id, message_id=user_chat_message_id)
+                await db.delete(table=messages_table, key=messages_record["key"])
+            return
 
         await bot.set_message_reaction(
             chat_id=user_chat_id,

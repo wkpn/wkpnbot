@@ -52,29 +52,29 @@ class MessagesMiddleware(BaseMiddleware):
         if chat_id == self._forum_id:
             # https://github.com/tdlib/telegram-bot-api/issues/356#issuecomment-1405378400
             if not event.reply_to_message.forum_topic_created:
-                record = await db.fetch(
+                if record := await db.fetch(
                     table=self._table,
                     query=dict(forum_message_id=event.reply_to_message.message_id)
-                )
-                reply_parameters = ReplyParameters(
-                    message_id=record["user_chat_message_id"],
-                    quote_parse_mode=None,
-                    **_prepare_quote_params(event.quote)
-                )
+                ):
+                    reply_parameters = ReplyParameters(
+                        message_id=record["user_chat_message_id"],
+                        quote_parse_mode=None,
+                        **_prepare_quote_params(event.quote)
+                    )
         else:
             if event.reply_to_message:
-                record = await db.fetch(
+                if record := await db.fetch(
                     table=self._table,
                     query=dict(
                         user_chat_id=chat_id,
                         user_chat_message_id=event.reply_to_message.message_id
                     )
-                )
-                reply_parameters = ReplyParameters(
-                    message_id=record["forum_message_id"],
-                    quote_parse_mode=None,
-                    **_prepare_quote_params(event.quote)
-                )
+                ):
+                    reply_parameters = ReplyParameters(
+                        message_id=record["forum_message_id"],
+                        quote_parse_mode=None,
+                        **_prepare_quote_params(event.quote)
+                    )
 
         data["reply_parameters"] = reply_parameters
 
@@ -82,7 +82,7 @@ class MessagesMiddleware(BaseMiddleware):
 
         await db.put(
             table=self._table,
-            data=dict(
+            item=dict(
                 user_chat_id=forum_topic_record["chat_id"],
                 user_chat_message_id=user_chat_message_id,
                 forum_message_id=forum_message_id

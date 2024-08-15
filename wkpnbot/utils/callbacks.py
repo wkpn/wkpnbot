@@ -10,3 +10,7 @@ class UserUpdateCallback(CallbackData, prefix="user"):
 class EditedMessageCallback(CallbackData, prefix="edited"):
     type: str
     edit_date: int
+
+
+class WipeForumTopicCallback(CallbackData, prefix="wipe"):
+    type: str

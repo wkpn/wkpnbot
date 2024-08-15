@@ -1,5 +1,5 @@
-import asyncio
 import argparse
+import asyncio
 import sys
 
 if sys.version_info < (3, 11):

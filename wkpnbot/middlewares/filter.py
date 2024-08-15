@@ -39,6 +39,8 @@ class FilterMiddleware(BaseMiddleware):
                 ContentType.CHAT_BACKGROUND_SET |
                 ContentType.DELETE_CHAT_PHOTO |
                 ContentType.FORUM_TOPIC_EDITED |
+                ContentType.GENERAL_FORUM_TOPIC_HIDDEN |
+                ContentType.GENERAL_FORUM_TOPIC_UNHIDDEN |
                 ContentType.NEW_CHAT_PHOTO |
                 ContentType.NEW_CHAT_TITLE |
                 ContentType.PINNED_MESSAGE |

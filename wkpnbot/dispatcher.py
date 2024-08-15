@@ -6,15 +6,14 @@ from aiogram import (
     Dispatcher
 )
 from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
 from aiogram.client.session.aiohttp import AiohttpSession
+from aiogram.enums import ParseMode
 
 from .routers import configure_dispatcher
 
 
 def create_bot_and_dispatcher(
-    bot_token: str,
-    **kwargs: Any
+    bot_token: str, **kwargs: Any
 ) -> tuple[Bot, Dispatcher]:
     def _orjson_dumps(value: Any) -> str:
         return orjson.dumps(value).decode()
