@@ -87,7 +87,7 @@ class DBClient:
 
     async def fetch_many(
         self, table: str, query: dict[str, int], limit: int = 100
-    ) -> list[dict[str, int | str]] | None:
+    ) -> list[dict[str, int | str]]:
         session = await self.get_session()
 
         items = []
@@ -114,10 +114,7 @@ class DBClient:
                 else:
                     break
 
-        if items:
-            return items
-
-        return
+        return items
 
     async def put(
         self, table: str, item: dict[str, int]

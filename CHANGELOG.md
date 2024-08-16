@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.3.1 - August 16th, 2024
+
+### Changed
+
+- `DBClient.fetch_many` now always returns a list.
+- Small refactoring for dispatcher configuration.
+
+### Fixed
+
+- `/wipe` command not working due to `DBClient.fetch_many` returning `None`.
+
 ## 2.3.0 - August 16th, 2024
 
 ### Added

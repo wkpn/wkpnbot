@@ -45,31 +45,32 @@ def configure_dispatcher(dp: Dispatcher, **kwargs: Any) -> None:
     messages_table = kwargs["messages_table"]
     topics_table = kwargs["topics_table"]
 
-    dp.message.outer_middleware(FilterMiddleware())
-
-    topic_management_middleware = TopicsManagementMiddleware(
-        forum_id=forum_id, table=topics_table
-    )
-    dp.callback_query.outer_middleware(topic_management_middleware)
-    dp.message.outer_middleware(topic_management_middleware)
-
+    # initialize middlewares
     interactions_middleware = InteractionsMiddleware(
         forum_id=forum_id, table=messages_table
     )
-
-    dp.edited_message.outer_middleware(interactions_middleware)
-    dp.message_reaction.outer_middleware(interactions_middleware)
-
     messages_middleware = MessagesMiddleware(
         forum_id=forum_id, table=messages_table
     )
+    topics_management_middleware = TopicsManagementMiddleware(
+        forum_id=forum_id, table=topics_table
+    )
 
+    # configure middlewares for dispatcher
+    dp.callback_query.outer_middleware(topics_management_middleware)
+    dp.edited_message.outer_middleware(interactions_middleware)
+    dp.message.outer_middleware(FilterMiddleware())
+    dp.message.outer_middleware(topics_management_middleware)
+    dp.message_reaction.outer_middleware(interactions_middleware)
+
+    # configure user routers
     user_commands_router = build_user_commands_router()
     user_actions_router = build_user_actions_router(
         forum_id=forum_id
     )
     user_actions_router.message.middleware(messages_middleware)
 
+    # configure forum routers
     forum_commands_router = build_forum_commands_router(
         forum_id=forum_id
     )
@@ -78,12 +79,15 @@ def configure_dispatcher(dp: Dispatcher, **kwargs: Any) -> None:
     )
     forum_actions_router.message.middleware(messages_middleware)
 
+    # set up user and forum routers in dispatcher
     dp.include_routers(
         user_commands_router,
         user_actions_router,
         forum_commands_router,
         forum_actions_router
     )
+
+    # set up my_chat_member handler for dispatcher
 
     @dp.my_chat_member(
         ChatMemberUpdatedFilter(member_status_changed=PROMOTED_TRANSITION)
